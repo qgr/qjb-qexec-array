@@ -27,13 +27,23 @@ function construct_clauses(clause) {
 
   var operands = clause[operator];
 
-  console.log(clause)
-
   if (operator === 'and') {
     return and(_.map(operands, construct_clauses));
   }
   if (operator === 'eq') {
     return construct_op(eq, operands)
+  }
+  if (operator === 'ne') {
+    return construct_op(ne, operands)
+  }
+  if (operator === 'lt') {
+    return construct_op(lt, operands)
+  }
+  if (operator === 'lte') {
+    return construct_op(lte, operands)
+  }
+  if (operator === 'gt') {
+    return construct_op(gt, operands)
   }
   if (operator === 'gte') {
     return construct_op(gte, operands)
@@ -65,6 +75,22 @@ function construct_op(op, operands) {
 // Functional versions of comparators
 function eq(a, b) {
   return a === b;
+}
+
+function ne(a, b) {
+  return a !== b;
+}
+
+function lt(a, b) {
+  return a < b;
+}
+
+function lte(a, b) {
+  return a <= b;
+}
+
+function gt(a, b) {
+  return a > b;
 }
 
 function gte(a, b) {

@@ -36,42 +36,206 @@ var projects_raw = {
 
 var projects = expand_meta(projects_raw.meta, projects_raw.array);
 
-qtree = {
-  select: {
-    cols: [
-      'name',
-      'cost'
-    ],
-    from: projects,
-    where: {
-      and: [
-        {
-          eq: [
-          'type',
-          'INTEL'
-          ]
-        },
-        {
-          gte: [
-          'start_year',
-          1960
-          ]
-        }
-      ]
-    }
-  }
+var projects_small_raw = {
+  meta: [
+    'name',
+    'start_year',
+    'type',
+    'cost'
+  ],
+  array: [
+    ['LINEAR UNICORN', 1967, 'OPORD', 90000000],
+    ['PEACE ZEBRA', 1971, 'EQUIPMENT', 3000000]
+  ]
 }
 
-describe("Construct query", function() {
+var projects_small = expand_meta(
+    projects_small_raw.meta,
+    projects_small_raw.array);
 
-  it("returns query results",
+describe("execute_query", function() {
+
+  it("can execute complex queries",
     function() {
+
+       var qtree = {
+        select: {
+          cols: [
+            'name',
+            'cost'
+          ],
+          from: 'projects',
+          where: {
+            and: [
+              {
+                eq: [
+                'type',
+                'INTEL'
+                ]
+              },
+              {
+                gte: [
+                'start_year',
+                1960
+                ]
+              }
+            ]
+          }
+        }
+      }
       var expected = [
-  { name : 'BERNIE', cost : 15000000 },
-  { name : 'CLUSTER GIRL', cost : 85000000 },
-  { name : 'COBRA TIME', cost : 45000000 },
-  { name : 'COMFY DRESS', cost : 1100000 }
-  ]
+        { name : 'BERNIE', cost : 15000000 },
+        { name : 'CLUSTER GIRL', cost : 85000000 },
+        { name : 'COBRA TIME', cost : 45000000 },
+        { name : 'COMFY DRESS', cost : 1100000 }
+      ]
+
+      expect(execute_query(projects, qtree))
+      .toEqual(expected);
+  });
+
+  it("can execute eq clause",
+    function() {
+
+       var qtree = {
+        select: {
+          cols: ['name'],
+          from: 'projects',
+          where: {
+            eq: [
+              'name',
+              'LINEAR UNICORN'
+            ]
+          }
+        }
+      }
+
+      var expected = [
+        { name : 'LINEAR UNICORN'},
+      ]
+
+      expect(execute_query(projects, qtree))
+      .toEqual(expected);
+  });
+
+  it("can execute ne clause",
+    function() {
+
+       var qtree = {
+        select: {
+          cols: ['name'],
+          from: 'projects_small',
+          where: {
+            ne: [
+              'name',
+              'LINEAR UNICORN'
+            ]
+          }
+        }
+      }
+
+      var expected = [
+        { name : 'PEACE ZEBRA'},
+      ]
+
+      expect(execute_query(projects_small, qtree))
+      .toEqual(expected);
+  });
+
+  it("can execute lt clause",
+    function() {
+
+       var qtree = {
+        select: {
+          cols: ['name'],
+          from: 'projects',
+          where: {
+            lt: [
+              'start_year',
+              1960
+            ]
+          }
+        }
+      }
+
+      var expected = [
+        { name : 'CLARINET ANCHOR'},
+      ]
+
+      expect(execute_query(projects, qtree))
+      .toEqual(expected);
+  });
+
+  it("can execute lte clause",
+    function() {
+
+       var qtree = {
+        select: {
+          cols: ['name'],
+          from: 'projects',
+          where: {
+            lte: [
+              'start_year',
+              1960
+            ]
+          }
+        }
+      }
+
+      var expected = [
+        { name : 'CLARINET ANCHOR'},
+        { name : 'DIAMOND DUST'}
+      ]
+
+      expect(execute_query(projects, qtree))
+      .toEqual(expected);
+  });
+
+
+  it("can execute gt clause",
+    function() {
+
+       var qtree = {
+        select: {
+          cols: ['name'],
+          from: 'projects',
+          where: {
+            gt: [
+              'start_year',
+              1992
+            ]
+          }
+        }
+      }
+
+      var expected = [
+        { name : 'HARVEST PEOPLE'},
+      ]
+
+      expect(execute_query(projects, qtree))
+      .toEqual(expected);
+  });
+
+  it("can execute gte clause",
+    function() {
+
+       var qtree = {
+        select: {
+          cols: ['name'],
+          from: 'projects',
+          where: {
+            gte: [
+              'start_year',
+              1992
+            ]
+          }
+        }
+      }
+
+      var expected = [
+        { name : 'BUBBLE DANCER' },
+        { name : 'HARVEST PEOPLE'},
+      ]
 
       expect(execute_query(projects, qtree))
       .toEqual(expected);
