@@ -3,7 +3,7 @@
 // Arrays.
 
 function expand_meta(meta, array) {
-  return _.map(array, function(row) {
+  return _.map(array, function zip_meta(row) {
     return _.object(meta, row);
   });
 }
@@ -19,7 +19,7 @@ function execute_query(array_map, qtree) {
     result = _.filter(result, construct_clauses(select.where));
   }
 
-  result = _.map(result, function(row) {
+  result = _.map(result, function select_cols(row) {
     return _.pick(row, select.cols);
   });
 
@@ -82,22 +82,22 @@ function construct_clauses(clause) {
 function and(clauses) {
   return function(row) {
     // Apply each clause to each row
-    var clause_results = _.map(clauses, function(clause) {
+    var clause_results = _.map(clauses, function map_clauses(clause) {
       return clause(row);
     });
     // Every clause must return true
-    return  _.every(clause_results, function(b) { return b === true; });
+    return  _.every(clause_results);
   }
 }
 
 function or(clauses) {
   return function(row) {
     // Apply each clause to each row
-    var clause_results = _.map(clauses, function(clause) {
+    var clause_results = _.map(clauses, function map_clauses(clause) {
       return clause(row);
     });
     // Every clause must return true
-    return  _.some(clause_results, function(b) { return b === true; });
+    return  _.some(clause_results);
   }
 }
 
