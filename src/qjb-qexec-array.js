@@ -9,11 +9,13 @@ function expand_meta(meta, array) {
 }
 
 
-function construct_query(base_array, qtree) {
-  var filtered_array = _.filter(base_array, construct_clauses(qtree.where));
+function execute_query(base_array, qtree) {
+  var select = qtree.select;
+
+  var filtered_array = _.filter(base_array, construct_clauses(select.where));
 
   result = _.map(filtered_array, function(row) {
-    return _.pick(row, qtree.select);
+    return _.pick(row, select.cols);
   });
 
   return result

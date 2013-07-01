@@ -37,26 +37,28 @@ var projects_raw = {
 var projects = expand_meta(projects_raw.meta, projects_raw.array);
 
 qtree = {
-  select: [
-    'name',
-    'cost'
-  ],
-  from: projects,
-  where: {
-    and: [
-      {
-        eq: [
-        'type',
-        'INTEL'
-        ]
-      },
-      {
-        gte: [
-        'start_year',
-        1960
-        ]
-      }
-    ]
+  select: {
+    cols: [
+      'name',
+      'cost'
+    ],
+    from: projects,
+    where: {
+      and: [
+        {
+          eq: [
+          'type',
+          'INTEL'
+          ]
+        },
+        {
+          gte: [
+          'start_year',
+          1960
+          ]
+        }
+      ]
+    }
   }
 }
 
@@ -71,7 +73,7 @@ describe("Construct query", function() {
   { name : 'COMFY DRESS', cost : 1100000 }
   ]
 
-      expect(construct_query(projects, qtree))
+      expect(execute_query(projects, qtree))
       .toEqual(expected);
   });
 
