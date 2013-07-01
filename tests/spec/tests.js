@@ -60,45 +60,6 @@ var array_map = {
 
 describe("execute_query", function() {
 
-  it("can execute complex queries",
-    function() {
-
-       var qtree = {
-        select: {
-          cols: [
-            'name',
-            'cost'
-          ],
-          from: 'projects',
-          where: {
-            and: [
-              {
-                eq: [
-                'type',
-                'INTEL'
-                ]
-              },
-              {
-                gte: [
-                'start_year',
-                1960
-                ]
-              }
-            ]
-          }
-        }
-      }
-      var expected = [
-        { name : 'BERNIE', cost : 15000000 },
-        { name : 'CLUSTER GIRL', cost : 85000000 },
-        { name : 'COBRA TIME', cost : 45000000 },
-        { name : 'COMFY DRESS', cost : 1100000 }
-      ]
-
-      expect(execute_query(array_map, qtree))
-      .toEqual(expected);
-  });
-
   it("can execute eq clause",
     function() {
 
@@ -245,6 +206,85 @@ describe("execute_query", function() {
       expect(execute_query(array_map, qtree))
       .toEqual(expected);
   });
+
+
+  it("can execute and queries",
+    function() {
+
+       var qtree = {
+        select: {
+          cols: [
+            'name',
+            'cost'
+          ],
+          from: 'projects',
+          where: {
+            and: [
+              {
+                eq: [
+                'type',
+                'INTEL'
+                ]
+              },
+              {
+                gte: [
+                'start_year',
+                1960
+                ]
+              }
+            ]
+          }
+        }
+      }
+      var expected = [
+        { name : 'BERNIE', cost : 15000000 },
+        { name : 'CLUSTER GIRL', cost : 85000000 },
+        { name : 'COBRA TIME', cost : 45000000 },
+        { name : 'COMFY DRESS', cost : 1100000 }
+      ]
+
+      expect(execute_query(array_map, qtree))
+      .toEqual(expected);
+  });
+
+  it("can execute or queries",
+    function() {
+
+       var qtree = {
+        select: {
+          cols: [
+            'name',
+            'cost'
+          ],
+          from: 'projects',
+          where: {
+            or: [
+              {
+                eq: [
+                'start_year',
+                1977
+                ]
+              },
+              {
+                eq: [
+                'start_year',
+                1966
+                ]
+              }
+            ]
+          }
+        }
+      }
+      var expected = [
+        { name : 'CLUSTER GIRL', cost : 85000000 },
+        { name : 'COMFY DRESS', cost : 1100000 },
+        { name : 'WHITE CLOUD', cost : 55000000 }
+      ]
+
+      expect(execute_query(array_map, qtree))
+      .toEqual(expected);
+  });
+
 
 });
 

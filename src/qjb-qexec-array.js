@@ -33,6 +33,9 @@ function construct_clauses(clause) {
   if (operator === 'and') {
     return and(_.map(operands, construct_clauses));
   }
+  if (operator === 'or') {
+    return or(_.map(operands, construct_clauses));
+  }
   if (operator === 'eq') {
     return construct_op(eq, operands)
   }
@@ -54,7 +57,6 @@ function construct_clauses(clause) {
 
 }
 
-
 function and(clauses) {
   return function(row) {
     // Apply each clause to each row
@@ -63,6 +65,17 @@ function and(clauses) {
     });
     // Every clause must return true
     return  _.every(clause_results, function(b) { return b === true; });
+  }
+}
+
+function or(clauses) {
+  return function(row) {
+    // Apply each clause to each row
+    var clause_results = _.map(clauses, function(clause) {
+      return clause(row);
+    });
+    // Every clause must return true
+    return  _.some(clause_results, function(b) { return b === true; });
   }
 }
 
