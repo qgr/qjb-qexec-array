@@ -45,7 +45,8 @@ var projects_small_raw = {
   ],
   array: [
     ['LINEAR UNICORN', 1967, 'OPORD', 90000000],
-    ['PEACE ZEBRA', 1971, 'EQUIPMENT', 3000000]
+    ['PEACE ZEBRA', 1971, 'EQUIPMENT', 3000000],
+    ['NYMPH VOICE', 1983, 'EQUIPMENT', 150000000],
   ]
 }
 
@@ -59,6 +60,46 @@ var array_map = {
 }
 
 describe("execute_query", function() {
+
+  it("can execute unqualified query",
+    function() {
+
+       var qtree = {
+        select: {
+          cols: ['name'],
+          from: 'projects_small',
+        }
+      }
+
+      var expected = [
+        { name : 'LINEAR UNICORN'},
+        { name : 'PEACE ZEBRA'},
+        { name : 'NYMPH VOICE'}
+      ]
+
+      expect(execute_query(array_map, qtree))
+      .toEqual(expected);
+  });
+
+  it("can execute limit query",
+    function() {
+
+       var qtree = {
+        select: {
+          cols: ['name'],
+          from: 'projects',
+          limit: 2
+        }
+      }
+
+      var expected = [
+        { name : 'ACID TEST III' },
+        { name : 'ARCTIC CANDY' }
+      ]
+
+      expect(execute_query(array_map, qtree))
+      .toEqual(expected);
+  });
 
   it("can execute eq clause",
     function() {
@@ -102,6 +143,7 @@ describe("execute_query", function() {
 
       var expected = [
         { name : 'PEACE ZEBRA'},
+        { name : 'NYMPH VOICE'},
       ]
 
       expect(execute_query(array_map, qtree))
@@ -285,6 +327,78 @@ describe("execute_query", function() {
       .toEqual(expected);
   });
 
+  it("can execute asc order by",
+    function() {
+
+       var qtree = {
+        select: {
+          cols: ['name', 'cost'],
+          from: 'projects_small',
+          order_by: [
+            ['cost', 'asc']
+          ]
+        }
+      }
+
+      var expected = [
+        { name : 'PEACE ZEBRA', cost : 3000000 },
+        { name : 'LINEAR UNICORN', cost : 90000000 },
+        { name : 'NYMPH VOICE', cost : 150000000 }
+      ]
+
+      expect(execute_query(array_map, qtree))
+      .toEqual(expected);
+  });
+
+  it("can execute desc order by",
+    function() {
+
+       var qtree = {
+        select: {
+          cols: ['name', 'cost'],
+          from: 'projects_small',
+          order_by: [
+            ['cost', 'desc']
+          ]
+        }
+      }
+
+      var expected = [
+        { name : 'NYMPH VOICE', cost : 150000000 },
+        { name : 'LINEAR UNICORN', cost : 90000000 },
+        { name : 'PEACE ZEBRA', cost : 3000000 }
+      ]
+
+      expect(execute_query(array_map, qtree))
+      .toEqual(expected);
+  });
+
+  // Disabled until implemented.
+  /*
+  it("can execute combined asc and desc order by",
+    function() {
+
+       var qtree = {
+        select: {
+          cols: ['name', 'cost', 'type'],
+          from: 'projects_small',
+          order_by: [
+            ['type', 'desc'],
+            ['cost', 'asc']
+          ]
+        }
+      }
+
+      var expected = [
+        { name : 'LINEAR UNICORN', cost : 90000000, type : 'OPORD' },
+        { name : 'PEACE ZEBRA', cost : 3000000, type : 'EQUIPMENT' },
+        { name : 'NYMPH VOICE', cost : 150000000, type : 'EQUIPMENT' },
+      ]
+
+      expect(execute_query(array_map, qtree))
+      .toEqual(expected);
+  });
+  */
 
 });
 

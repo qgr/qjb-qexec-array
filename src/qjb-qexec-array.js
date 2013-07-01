@@ -13,13 +13,35 @@ function execute_query(array_map, qtree) {
 
   var select = qtree.select;
 
-  var base_array = array_map[select.from];
+  var result = array_map[select.from];
 
-  var filtered_array = _.filter(base_array, construct_clauses(select.where));
+  if (select.where) {
+    result = _.filter(result, construct_clauses(select.where));
+  }
 
-  result = _.map(filtered_array, function(row) {
+  result = _.map(result, function(row) {
     return _.pick(row, select.cols);
   });
+
+  if (select.order_by) {
+    // Currently only first order_by will be executed.
+
+    var order_by = select.order_by[0]
+
+    var col = order_by[0];
+
+    var type = order_by[1];
+
+    result = _.sortBy(result, col);
+
+    if (type === 'desc') {
+      result.reverse();
+    }
+  }
+
+  if (select.limit) {
+    result = result.slice(0, select.limit)
+  }
 
   return result
 }
