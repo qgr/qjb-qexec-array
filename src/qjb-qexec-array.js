@@ -9,8 +9,11 @@ function expand_meta(meta, array) {
 }
 
 
-function execute_query(base_array, qtree) {
+function execute_query(array_map, qtree) {
+
   var select = qtree.select;
+
+  var base_array = array_map[select.from];
 
   var filtered_array = _.filter(base_array, construct_clauses(select.where));
 

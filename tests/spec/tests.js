@@ -53,6 +53,11 @@ var projects_small = expand_meta(
     projects_small_raw.meta,
     projects_small_raw.array);
 
+var array_map = {
+  projects: projects,
+  projects_small: projects_small
+}
+
 describe("execute_query", function() {
 
   it("can execute complex queries",
@@ -90,7 +95,7 @@ describe("execute_query", function() {
         { name : 'COMFY DRESS', cost : 1100000 }
       ]
 
-      expect(execute_query(projects, qtree))
+      expect(execute_query(array_map, qtree))
       .toEqual(expected);
   });
 
@@ -114,7 +119,7 @@ describe("execute_query", function() {
         { name : 'LINEAR UNICORN'},
       ]
 
-      expect(execute_query(projects, qtree))
+      expect(execute_query(array_map, qtree))
       .toEqual(expected);
   });
 
@@ -138,7 +143,7 @@ describe("execute_query", function() {
         { name : 'PEACE ZEBRA'},
       ]
 
-      expect(execute_query(projects_small, qtree))
+      expect(execute_query(array_map, qtree))
       .toEqual(expected);
   });
 
@@ -162,7 +167,7 @@ describe("execute_query", function() {
         { name : 'CLARINET ANCHOR'},
       ]
 
-      expect(execute_query(projects, qtree))
+      expect(execute_query(array_map, qtree))
       .toEqual(expected);
   });
 
@@ -187,7 +192,7 @@ describe("execute_query", function() {
         { name : 'DIAMOND DUST'}
       ]
 
-      expect(execute_query(projects, qtree))
+      expect(execute_query(array_map, qtree))
       .toEqual(expected);
   });
 
@@ -212,7 +217,7 @@ describe("execute_query", function() {
         { name : 'HARVEST PEOPLE'},
       ]
 
-      expect(execute_query(projects, qtree))
+      expect(execute_query(array_map, qtree))
       .toEqual(expected);
   });
 
@@ -237,7 +242,7 @@ describe("execute_query", function() {
         { name : 'HARVEST PEOPLE'},
       ]
 
-      expect(execute_query(projects, qtree))
+      expect(execute_query(array_map, qtree))
       .toEqual(expected);
   });
 
