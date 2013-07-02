@@ -11,15 +11,30 @@
 
   <!-- include source files here... -->
   <!-- vendor source files -->
-  <script type="text/javascript" src="lib/underscore//underscore.js"></script>
-  <!-- our source files -->
-  <script type="text/javascript" src="../src/qjb-qexec-array.js"></script>
+  <script type="text/javascript">
 
-  <!-- include spec files here... -->
-  <script type="text/javascript" src="spec/tests.js"></script>
+    var require = {
+        paths: {
+          underscore: 'lib/underscore/underscore',
+          src: '../src/',
+        },
+        shim: {
+          'underscore': {
+            exports: '_'
+          }
+        }
+    };
+  </script>
+  <script type="text/javascript" src="lib/require/require.js"></script>
+
 
   <script type="text/javascript">
-    (function() {
+    require(
+    [
+        "underscore",
+        "spec"
+    ],
+    function() {
       var jasmineEnv = jasmine.getEnv();
       jasmineEnv.updateInterval = 1000;
 
@@ -31,20 +46,9 @@
         return htmlReporter.specFilter(spec);
       };
 
-      var currentWindowOnload = window.onload;
+      jasmineEnv.execute();
 
-      window.onload = function() {
-        if (currentWindowOnload) {
-          currentWindowOnload();
-        }
-        execJasmine();
-      };
-
-      function execJasmine() {
-        jasmineEnv.execute();
-      }
-
-    })();
+    });
   </script>
 
 </head>
@@ -52,3 +56,4 @@
 <body>
 </body>
 </html>
+
