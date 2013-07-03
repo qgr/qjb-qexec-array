@@ -29,9 +29,11 @@ define(function (require) {
       result = _.filter(result, construct_clauses(select.where));
     }
 
-    result = _.map(result, function select_cols(row) {
-      return _.pick(row, select.cols);
-    });
+    if (select.cols) {
+      result = _.map(result, function select_cols(row) {
+        return _.pick(row, select.cols);
+      });
+    }
 
     if (select.order_by) {
       // Currently only first order_by will be executed.
@@ -85,6 +87,13 @@ define(function (require) {
     }
     if (operator === 'gte') {
       return construct_op(gte, operands)
+    }
+    if (operator === 'in') {
+      var col = operands[0];
+      var in_list = operands[1];
+      return function(row) {
+        return _.contains(in_list, row[col]);
+      }
     }
 
   }
