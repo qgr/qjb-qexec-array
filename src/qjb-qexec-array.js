@@ -35,6 +35,21 @@ define(function (require) {
       });
     }
 
+    // Prototype aggregation.
+    if (select.agg) {
+      var group_by = select.agg.group_by;
+      var grouped = _.groupBy(result, function group(row) {
+        return row[group_by];
+      });
+      console.log(grouped);
+      result = _.map(grouped, function(v, k) {
+        var val = grouped[k] || 0;
+        var agg = {val: sum(pluck_from_groups(val)) };
+        agg[group_by] = k;
+        return agg;
+      });
+    }
+
     if (select.order_by) {
       // Currently only first order_by will be executed.
 
@@ -153,6 +168,15 @@ define(function (require) {
   function gte(a, b) {
     return a >= b;
   }
+
+  function pluck_from_groups(arr) {
+    return _.map(arr, function(m) { return m.val; });
+  };
+
+  function sum(arr) {
+    return _.reduce(arr, function(memo, num) { return memo + num; }, 0);
+  };
+
 
 });
 
