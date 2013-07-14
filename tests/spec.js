@@ -59,9 +59,32 @@ define(function(require) {
       projects_small_raw.meta,
       projects_small_raw.array);
 
+  var projects_group_test = {
+    meta: [
+      'name',
+      'start_year',
+      'type',
+      'cost'
+    ],
+    array: [
+      ['SILVER LINING', 1968, 'OPORD', 50000000],
+      ['SHINY DISC', 1968, 'OPORD', 50000000],
+      ['CLEVER SNAKES', 1967, 'OPORD', 100000000],
+      ['LINEAR UNICORN', 1967, 'OPORD', 100000000],
+      ['PEACE ZEBRA', 1967, 'EQUIPMENT', 3000000],
+      ['NYMPH VOICE', 1967, 'EQUIPMENT', 150000000],
+    ]
+  }
+
+  var projects_group_test = qexec.expand_meta(
+      projects_group_test.meta,
+      projects_group_test.array);
+
+
   var array_map = {
     projects: projects,
-    projects_small: projects_small
+    projects_small: projects_small,
+    projects_group_test: projects_group_test
   }
 
   describe("execute_query", function() {
@@ -405,6 +428,88 @@ define(function(require) {
         .toEqual(expected);
     });
     */
+
+    it("can execute sum queries (without grouping)",
+      function() {
+
+         var qtree = {
+          select: {
+            cols: [
+              'type',
+              'cost'
+            ],
+            from: 'projects',
+            agg: {
+              func: 'sum',
+              col: 'cost',
+            }
+          }
+        }
+        var expected = [
+          { cost : 96689700000 }
+        ]
+
+        expect(qexec.execute_query(array_map, qtree))
+        .toEqual(expected);
+    });
+
+    it("can execute sum queries with single grouping",
+      function() {
+
+         var qtree = {
+          select: {
+            cols: [
+              'type',
+              'cost'
+            ],
+            from: 'projects',
+            agg: {
+              func: 'sum',
+              col: 'cost',
+              group_by: ['type']
+            }
+          }
+        }
+        var expected = [
+          { cost : 77000000, type : 'FIELDEX' },
+          { cost : 95215000000, type : 'OPORD' },
+          { cost : 55600000, type : 'CONSTRUCTION' },
+          { cost : 181100000, type : 'INTEL' },
+          { cost : 161000000, type : 'EQUIPMENT' },
+          { cost : 1000000000, type : 'RESEARCH' }
+        ]
+
+        expect(qexec.execute_query(array_map, qtree))
+        .toEqual(expected);
+    });
+
+    it("can execute sum queries with multiple grouping",
+      function() {
+
+         var qtree = {
+          select: {
+            cols: [
+              'type',
+              'start_year',
+              'cost'
+            ],
+            from: 'projects_group_test',
+            agg: {
+              func: 'sum',
+              col: 'cost',
+              group_by: ['type', 'start_year']
+            }
+          }
+        }
+        var expected = [
+          { cost : 100000000, type : 'OPORD', start_year : 1968 },
+          { cost : 200000000, type : 'OPORD', start_year : 1967 },
+          { cost : 153000000, type : 'EQUIPMENT', start_year : 1967 }
+        ]
+
+        expect(qexec.execute_query(array_map, qtree))
+        .toEqual(expected);
+    });
 
   });
 });

@@ -18,7 +18,6 @@ define(function (require) {
     });
   }
 
-
   function execute_query(array_map, qtree) {
 
     var select = qtree.select;
@@ -35,20 +34,29 @@ define(function (require) {
       });
     }
 
+    var agg_func_map = {
+      'sum': sum
+    };
+
     // Prototype aggregation.
     if (select.agg) {
-      var group_by = select.agg.group_by;
-      var grouped = _.groupBy(result, function group(row) {
-        return row[group_by];
-      });
-      console.log(grouped);
-      result = _.map(grouped, function(v, k) {
-        var val = grouped[k] || 0;
-        var agg = {val: sum(pluck_from_groups(val)) };
-        agg[group_by] = k;
-        return agg;
-      });
+
+      var group_by_list = select.agg.group_by;
+
+      var grouped;
+      if (group_by_list) {
+        grouped = group_arr(result, group_by_list);
+      } else {
+        grouped = group_arr(result);
+      }
+
+      var func = agg_func_map[select.agg.func];
+      var col = select.agg.col;
+
+      result = aggregate_on_groups(grouped, func, col);
+
     }
+
 
     if (select.order_by) {
       // Currently only first order_by will be executed.
@@ -169,13 +177,44 @@ define(function (require) {
     return a >= b;
   }
 
-  function pluck_from_groups(arr) {
-    return _.map(arr, function(m) { return m.val; });
+  function pluck_from_groups(arr, col) {
+    return _.map(arr, function(m) { return m[col]; });
   };
 
   function sum(arr) {
     return _.reduce(arr, function(memo, num) { return memo + num; }, 0);
   };
+
+  function group_arr(arr, group_by_list) {
+    var grouped = _.groupBy(arr, function group(row) {
+      // We build a group key, which is an object where the keys
+      // are the columns to be grouped on, and point to the values
+      // of those columns in the group.
+      var group_key = {};
+      _.each(group_by_list, function(group_by) {
+        group_key[group_by] = row[group_by];
+      });
+
+      // We then stringify the object so we can use it as a key in an object.
+      // This is a hack to enable an easy group-key-to-rows map.
+      return JSON.stringify(group_key);
+    });
+    return grouped;
+  }
+
+  function aggregate_on_groups(grouped, func, col) {
+      return _.map(grouped, function(v, k) {
+        var val = grouped[k] || 0;
+        var agg = {};
+        agg[col] = func(pluck_from_groups(val, col));
+
+        // We deserialize group-key after aggregating.
+        var group_key = JSON.parse(k);
+        agg = _.extend(agg, group_key);
+
+        return agg;
+      });
+  }
 
 
 });
