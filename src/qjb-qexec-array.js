@@ -118,6 +118,24 @@ define(function (require) {
         return _.contains(in_list, row[col]);
       }
     }
+    if (operator === 'match') {
+      var col = operands[0];
+      var match_regex = new RegExp(operands[1]);
+      return function(row) {
+        if (row[col].match(match_regex)) {
+          return true;
+        }
+      }
+    }
+    if (operator === 'imatch') {
+      var col = operands[0];
+      var match_regex = new RegExp(operands[1], 'i');
+      return function(row) {
+        if (row[col].match(match_regex)) {
+          return true;
+        }
+      }
+    }
 
   }
 
