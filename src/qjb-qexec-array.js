@@ -75,7 +75,8 @@ define(function (require) {
     }
 
     if (select.limit) {
-      result = result.slice(0, select.limit)
+      var offset = select.offset || 0;
+      result = result.slice(offset, select.limit)
     }
 
     return result
